@@ -99,6 +99,21 @@ app.put('/api/courses/:id', (req, res) => {
   res.send(courseFound);
 });
 
+app.delete('/api/courses/:id', (req, res) => {
+  const course = courses.find((c) => c.id === parseInt(req.params.id));
+  if (!course) {
+    res.status(404).send('Course was not found!');
+  }
+
+  // const result = Joi.object({
+  // })
+
+  const index = courses.indexOf(course);
+  courses.splice(index, 1);
+
+  res.send(course);
+});
+
 app.listen(port, () => {
   console.log(`Listening to port ${port}...`);
 });
