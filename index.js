@@ -69,6 +69,7 @@ app.put('/api/courses/:id', (req, res) => {
   const courseFound = courses.find((c) => c.id === parseInt(req.params.id));
   if (!courseFound) {
     res.status(404).send('Course was not found');
+    return;
   }
 
   //Validate
@@ -103,6 +104,7 @@ app.delete('/api/courses/:id', (req, res) => {
   const course = courses.find((c) => c.id === parseInt(req.params.id));
   if (!course) {
     res.status(404).send('Course was not found!');
+    return;
   }
 
   // const result = Joi.object({
