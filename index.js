@@ -1,10 +1,29 @@
+const logger = require('./logger');
+const morgan = require('morgan');
+const authentication = require('./authentication');
 const express = require('express');
+const helmet = require('helmet');
 const Joi = require('joi');
-const port = process.env.PORT || 3005;
+const port = process.env.PORT || 3000;
 
 const app = express();
-app.use(express.json());
 
+console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
+console.log(`app: ${app.get('env')}`);
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public'));
+app.use(helmet());
+
+if (app.get('env') === 'development') {
+  app.use(morgan('tiny'));
+  console.log('Morgan enabled...');
+}
+
+app.use(authentication);
+
+app.use(logger);
 const courses = [
   {
     id: 1,
@@ -82,21 +101,15 @@ app.put('/api/courses/:id', (req, res) => {
 
   const result = schema.validate(req.body);
   if (result.error) {
-    res.status(404).send(result.error.details[0].message);
+    res.status(400).send(result.error.details[0].message);
     return;
   }
 
   //update course
   //return the updated course
 
-  //   const course = {
-  //     name: req.body.name,
-  //     course: req.body.course,
-  //   };
-
   courseFound.name = req.body.name;
 
-  //courseFound.push(course);
   res.send(courseFound);
 });
 
