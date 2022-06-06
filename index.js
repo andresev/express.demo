@@ -1,3 +1,4 @@
+const config = require('config');
 const logger = require('./logger');
 const morgan = require('morgan');
 const authentication = require('./authentication');
@@ -8,13 +9,18 @@ const port = process.env.PORT || 3000;
 
 const app = express();
 
-console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
-console.log(`app: ${app.get('env')}`);
+console.log(`NODE_ENV: ${process.env.NODE_ENV}`); //original
+console.log(`app: ${app.get('env')}`); //use this way returns development
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use(helmet());
+
+//configuration
+console.log(`Application Name: ` + config.get('name'));
+console.log(`Application Name: ` + config.get('mail.host'));
+console.log(`Application Name: ` + config.get('mail.password'));
 
 if (app.get('env') === 'development') {
   app.use(morgan('tiny'));
