@@ -1,3 +1,5 @@
+const startupDebugger = require('debug')('app:startup');
+const dbDebugger = require('debug')('app:db');
 const config = require('config');
 const logger = require('./logger');
 const morgan = require('morgan');
@@ -6,8 +8,12 @@ const express = require('express');
 const helmet = require('helmet');
 const Joi = require('joi');
 const port = process.env.PORT || 3000;
-
 const app = express();
+
+app.set('view engine', 'pug');
+
+//optional
+app.set('views', './views'); //default root:views
 
 console.log(`NODE_ENV: ${process.env.NODE_ENV}`); //original
 console.log(`app: ${app.get('env')}`); //use this way returns development
@@ -19,13 +25,15 @@ app.use(helmet());
 
 //configuration
 console.log(`Application Name: ` + config.get('name'));
-console.log(`Application Name: ` + config.get('mail.host'));
-console.log(`Application Name: ` + config.get('mail.password'));
+console.log(`Mail Server: ` + config.get('mail.host'));
+console.log(`Mail Password: ` + config.get('mail.password'));
 
 if (app.get('env') === 'development') {
   app.use(morgan('tiny'));
-  console.log('Morgan enabled...');
+  startupDebugger('Morgan enabled...');
 }
+
+dbDebugger('Connected to database...');
 
 app.use(authentication);
 
@@ -49,7 +57,8 @@ const courses = [
 ];
 
 app.get('/', (req, res) => {
-  res.send('hello world!');
+  //res.send('hello world!');
+  res.render('index', { title: 'My Express App', message: 'Hello' });
 });
 
 app.get('/api/courses', (req, res) => {
